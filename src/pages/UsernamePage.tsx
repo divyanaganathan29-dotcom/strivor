@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { db } from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 type Props = {
   next: (username: string) => void;
@@ -6,6 +8,20 @@ type Props = {
 
 function UsernamePage({ next }: Props) {
   const [username, setUsername] = useState("");
+
+  // ✅ SAVE FUNCTION (CORRECT PLACE)
+  const saveUser = async () => {
+    try {
+      await addDoc(collection(db, "users"), {
+        username: username,
+        createdAt: new Date(),
+      });
+
+      console.log("User saved!");
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -20,7 +36,10 @@ function UsernamePage({ next }: Props) {
       />
 
       <button
-        onClick={() => next(username)}
+        onClick={async () => {
+          await saveUser();   // ✅ save to firebase
+          next(username);     // ✅ go next page
+        }}
         disabled={!username}
         style={styles.button(username)}
       >
