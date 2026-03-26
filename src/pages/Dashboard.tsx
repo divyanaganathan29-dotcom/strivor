@@ -1,91 +1,102 @@
+import { useNavigate } from "react-router-dom";
+
 type Props = {
   userData: {
-    arena: string;
     username: string;
-    age: string;
   };
-  goToRanks: () => void;
-  goToGroups: () => void;
-  goToStats: () => void;
-  goToProfile: () => void;
 };
 
-function Dashboard({
-  userData,
-  goToRanks,
-  goToGroups,
-  goToStats,
-  goToProfile,
-}: Props) {
+function Dashboard({ userData }: Props) {
+  const navigate = useNavigate();
+
+  const leaderboard = [
+    { name: "Sneha", points: 5200 },
+    { name: "Arjun", points: 4800 },
+    { name: "Vikram", points: 4500 },
+    { name: "Meera", points: 4200 },
+    { name: "Rohit", points: 3900 },
+  ];
+
+  const weekly = [3, 3, 1, 2, 1, 5, 1];
+  const days = ["M", "T", "W", "T", "F", "S", "S"];
+
   return (
     <div style={styles.container}>
       
       {/* HEADER */}
-      <div style={styles.header}>
-        <h1 style={styles.title}>
-          Welcome back, {userData.username || "Divya"} 👋
-        </h1>
+      <h1 style={styles.title}>
+        Welcome back, {userData.username || "Divya"} 👋
+      </h1>
 
-        <span style={styles.active}>● Active</span>
-      </div>
+      <span style={styles.active}>● Active</span>
 
-      {/* MOTIVATION BAR */}
-      <div style={styles.highlight}>
-        🔥 You’re on fire! Keep that streak alive
+      {/* MOTIVATION */}
+      <div style={styles.banner}>
+        Every problem solved is a step closer to mastery ⚡
       </div>
 
       {/* STATS GRID */}
       <div style={styles.grid}>
-        <div style={styles.card}>
-          <p style={styles.label}>TODAY</p>
-          <h2>3</h2>
-          <span style={styles.sub}>problems solved</span>
-        </div>
-
-        <div style={styles.card}>
-          <p style={styles.label}>STREAK</p>
-          <h2>12 days</h2>
-          <span style={styles.sub}>Best: 28</span>
-        </div>
-
-        <div style={styles.cardGlow}>
-          <p style={styles.label}>POINTS</p>
-          <h2>3,420</h2>
-        </div>
-
-        <div style={styles.card}>
-          <p style={styles.label}>TOTAL SOLVED</p>
-          <h2>247</h2>
-        </div>
+        <Card title="TODAY" value="3" sub="problems solved" />
+        <Card title="STREAK" value="12 days" sub="Best: 28" />
+        <Card title="POINTS" value="3,420" />
+        <Card title="TOTAL SOLVED" value="247" />
       </div>
 
-      {/* BOTTOM NAV */}
-      <div style={styles.bottomNav}>
-        <div style={styles.navItem}>
-          🏠
-          <p>Home</p>
-        </div>
-
-        <div style={styles.navItem} onClick={goToRanks}>
-          🏆
-          <p>Ranks</p>
-        </div>
-
-        <div style={styles.navItem} onClick={goToGroups}>
-          👥
-          <p>Groups</p>
-        </div>
-
-        <div style={styles.navItem} onClick={goToStats}>
-          📊
-          <p>Stats</p>
-        </div>
-
-        <div style={styles.navItem} onClick={goToProfile}>
-          👤
-          <p>Profile</p>
-        </div>
+      {/* PERSONALITY */}
+      <div style={styles.personality}>
+        🧠 Habit Personality: <b>Burst Performer</b>
       </div>
+
+      {/* LEADERBOARD */}
+      <h2 style={styles.section}>🏆 Global Top 5</h2>
+
+      {leaderboard.map((u, i) => (
+        <div key={i} style={styles.leaderRow}>
+          <span>#{i + 1}</span>
+          <span>{u.name}</span>
+          <span>{u.points} pts</span>
+        </div>
+      ))}
+
+      {/* WEEKLY */}
+      <h2 style={styles.section}>Weekly Progress</h2>
+
+      <div style={styles.week}>
+        {weekly.map((val, i) => (
+          <div key={i} style={styles.weekItem}>
+            <div style={{ ...styles.bar, height: val * 15 }} />
+            <span>{days[i]}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* NAVBAR */}
+      <div style={styles.nav}>
+        <NavItem label="Home" onClick={() => navigate("/dashboard")} />
+        <NavItem label="Ranks" onClick={() => navigate("/ranks")} />
+        <NavItem label="Groups" onClick={() => navigate("/groups")} />
+        <NavItem label="Stats" onClick={() => navigate("/stats")} />
+        <NavItem label="Profile" onClick={() => navigate("/profile")} />
+      </div>
+    </div>
+  );
+}
+
+function Card({ title, value, sub }: any) {
+  return (
+    <div style={styles.card}>
+      <p style={styles.cardTitle}>{title}</p>
+      <h2>{value}</h2>
+      {sub && <span style={styles.sub}>{sub}</span>}
+    </div>
+  );
+}
+
+function NavItem({ label, onClick }: any) {
+  return (
+    <div style={styles.navItem} onClick={onClick}>
+      {label}
     </div>
   );
 }
@@ -95,85 +106,93 @@ const styles: any = {
     minHeight: "100vh",
     background: "#020617",
     color: "white",
-    padding: "25px",
-    paddingBottom: "90px",
+    padding: "20px",
+    paddingBottom: "80px",
   },
 
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "15px",
-  },
-
-  title: {
-    fontSize: "36px",
-    fontWeight: "bold",
-  },
+  title: { fontSize: "28px", fontWeight: "bold" },
 
   active: {
-    background: "#022c22",
     color: "#22c55e",
-    padding: "6px 12px",
-    borderRadius: "20px",
     fontSize: "12px",
+    marginBottom: "10px",
   },
 
-  highlight: {
+  banner: {
     border: "1px solid #38bdf8",
     padding: "15px",
-    borderRadius: "12px",
-    marginBottom: "25px",
-    color: "#e2e8f0",
+    borderRadius: "10px",
+    margin: "15px 0",
   },
 
   grid: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
-    gap: "20px",
+    gap: "15px",
   },
 
   card: {
     background: "#0f172a",
-    padding: "20px",
-    borderRadius: "16px",
+    padding: "15px",
+    borderRadius: "12px",
   },
 
-  cardGlow: {
+  cardTitle: { color: "#94a3b8" },
+  sub: { fontSize: "12px", color: "#64748b" },
+
+  personality: {
+    marginTop: "20px",
+    padding: "15px",
     background: "#0f172a",
-    padding: "20px",
-    borderRadius: "16px",
-    boxShadow: "0 0 30px rgba(56,189,248,0.25)",
+    borderRadius: "10px",
   },
 
-  label: {
-    color: "#94a3b8",
+  section: {
+    marginTop: "25px",
+    marginBottom: "10px",
+  },
+
+  leaderRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "10px",
+    background: "#0f172a",
     marginBottom: "8px",
-    fontSize: "14px",
+    borderRadius: "8px",
   },
 
-  sub: {
-    color: "#64748b",
-    fontSize: "12px",
+  week: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "15px",
   },
 
-  bottomNav: {
+  weekItem: {
+    textAlign: "center",
+  },
+
+  bar: {
+    width: "20px",
+    background: "#38bdf8",
+    margin: "0 auto",
+    borderRadius: "5px",
+  },
+
+  nav: {
     position: "fixed",
-    bottom: "0",
-    left: "0",
-    right: "0",
-    background: "#020617",
-    borderTop: "1px solid #1e293b",
+    bottom: 0,
+    left: 0,
+    right: 0,
     display: "flex",
     justifyContent: "space-around",
-    padding: "12px 0",
+    background: "#020617",
+    borderTop: "1px solid #1e293b",
+    padding: "12px",
   },
 
   navItem: {
-    textAlign: "center",
-    fontSize: "14px",
-    color: "#94a3b8",
     cursor: "pointer",
+    color: "#94a3b8",
   },
 };
 

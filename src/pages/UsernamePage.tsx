@@ -3,45 +3,47 @@ import { db } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
 
 type Props = {
+  userData: {
+    arena: string;
+    docId: string;
+  };
   next: (username: string) => void;
 };
 
-function UsernamePage({ next }: Props) {
+function UsernamePage({ userData, next }: Props) {
   const [username, setUsername] = useState("");
 
-  // ✅ SAVE FUNCTION (CORRECT PLACE)
   const saveUser = async () => {
     try {
-      await addDoc(collection(db, "users"), {
+      const docRef = await addDoc(collection(db, "users"), {
+        arena: userData.arena,
         username: username,
         createdAt: new Date(),
       });
 
-      console.log("User saved!");
+      console.log("Saved with ID:", docRef.id);
     } catch (error) {
-      console.error("Error:", error);
+      console.error(error);
     }
   };
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>Link your account</h1>
-      <p style={styles.subtitle}>Enter your coding platform username</p>
+      <h1 style={styles.title}>Enter Username</h1>
 
       <input
-        placeholder="Enter username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
+        placeholder="Username"
         style={styles.input}
       />
 
       <button
         onClick={async () => {
-          await saveUser();   // ✅ save to firebase
-          next(username);     // ✅ go next page
+          await saveUser();
+          next(username);
         }}
-        disabled={!username}
-        style={styles.button(username)}
+        style={styles.button}
       >
         Next →
       </button>
@@ -52,32 +54,25 @@ function UsernamePage({ next }: Props) {
 const styles = {
   container: {
     height: "100vh",
-    background: "#0f172a",
-    color: "white",
     display: "flex",
     flexDirection: "column" as const,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
+    background: "#020617",
+    color: "white",
   },
-  title: { fontSize: "40px" },
-  subtitle: { marginBottom: "20px", color: "#94a3b8" },
+  title: { fontSize: "32px" },
   input: {
-    padding: "12px",
+    padding: "10px",
+    margin: "20px",
     borderRadius: "8px",
-    border: "none",
-    width: "250px",
-    marginBottom: "20px",
   },
-  button: (active: string) => ({
-    padding: "14px 30px",
+  button: {
+    padding: "12px 20px",
     background: "#38bdf8",
     border: "none",
-    borderRadius: "10px",
-    color: "black",
-    fontWeight: "600",
-    opacity: active ? 1 : 0.4,
-    cursor: active ? "pointer" : "not-allowed",
-  }),
+    borderRadius: "8px",
+  },
 };
 
 export default UsernamePage;

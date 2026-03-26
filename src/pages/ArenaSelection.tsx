@@ -1,59 +1,48 @@
 import { useState } from "react";
+import { db } from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 type Props = {
-  next: (arena: string) => void;
+  next: (arena: string, docId: string) => void;
 };
 
 function ArenaSelection({ next }: Props) {
-  const [selected, setSelected] = useState("");
+  const [arena, setArena] = useState("");
 
-  const arenas = ["LeetCode", "Codeforces", "HackerRank", "CodeChef"];
+  const saveArena = async () => {
+    const docRef = await addDoc(collection(db, "users"), {
+      arena: arena,
+      createdAt: new Date(),
+    });
+
+    console.log("Doc created:", docRef.id);
+
+    next(arena, docRef.id); // 🔥 PASS DOC ID
+  };
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>Choose your arena</h1>
-      <p style={styles.subtitle}>Where do you crush code?</p>
+      <h1 style={styles.title}>Choose your platform</h1>
 
-      <div style={styles.grid}>
-        {arenas.map((arena) => (
+      <div style={styles.list}>
+        {["LeetCode", "Codeforces", "CodeChef", "HackerRank"].map((item) => (
           <div
-            key={arena}
-            onClick={() => setSelected(arena)}
+            key={item}
+            onClick={() => setArena(item)}
             style={{
               ...styles.card,
-              border:
-                selected === arena
-                  ? "2px solid #38bdf8"
-                  : "2px solid transparent",
+              border: arena === item ? "2px solid #38bdf8" : "none",
             }}
           >
-            {arena}
+            {item}
           </div>
         ))}
       </div>
 
       <button
-        onClick={() => next(selected)}
-        disabled={!selected}
-        style={{
-          padding: "14px 30px",
-          background: "#38bdf8",
-          border: "none",
-          borderRadius: "10px",
-          color: "black",
-          fontSize: "16px",
-          fontWeight: "600",
-          marginTop: "20px",
-          opacity: selected ? 1 : 0.4,
-          cursor: selected ? "pointer" : "not-allowed",
-          transition: "0.2s",
-        }}
-        onMouseEnter={(e) => {
-          if (selected) e.currentTarget.style.background = "#0ea5e9";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = "#38bdf8";
-        }}
+        onClick={saveArena}
+        disabled={!arena}
+        style={styles.button(arena)}
       >
         Next →
       </button>
@@ -71,27 +60,24 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
   },
-  title: {
-    fontSize: "48px",
-    marginBottom: "10px",
-  },
-  subtitle: {
-    marginBottom: "30px",
-    color: "#94a3b8",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, 180px)",
-    gap: "25px",
-  },
+  title: { fontSize: "40px", marginBottom: "20px" },
+  list: { display: "flex", flexDirection: "column" as const, gap: "15px" },
   card: {
-    padding: "25px",
+    padding: "15px",
     background: "#1e293b",
-    borderRadius: "12px",
+    borderRadius: "10px",
     cursor: "pointer",
     textAlign: "center" as const,
-    fontSize: "18px",
+    width: "200px",
   },
+  button: (active: string) => ({
+    padding: "14px 30px",
+    background: "#38bdf8",
+    border: "none",
+    borderRadius: "10px",
+    color: "black",
+    opacity: active ? 1 : 0.4,
+  }),
 };
 
 export default ArenaSelection;

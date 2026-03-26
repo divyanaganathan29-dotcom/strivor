@@ -1,85 +1,132 @@
+import { useNavigate } from "react-router-dom";
+
 type Props = {
   userData: {
-    arena: string;
     username: string;
     age: string;
+    arena: string;
   };
-  goBack: () => void;
 };
 
-function ProfilePage({ userData, goBack }: Props) {
+function ProfilePage({ userData }: Props) {
+  const navigate = useNavigate();
+
   return (
     <div style={styles.container}>
       
-      {/* HEADER */}
+      {/* PROFILE HEADER */}
       <div style={styles.header}>
-        <div style={styles.avatar}>D</div>
+        <div style={styles.avatar}>
+          {userData.username?.[0]?.toUpperCase() || "D"}
+        </div>
+
         <h2>{userData.username || "Divya"}</h2>
         <p style={styles.handle}>@{userData.username || "divya_codes"}</p>
-        <span style={styles.active}>● Active</span>
+
+        <div style={styles.active}>● Active</div>
       </div>
 
       {/* PERSONALITY */}
-      <div style={styles.highlight}>
+      <div style={styles.personality}>
         <p style={styles.small}>HABIT PERSONALITY</p>
-        <h3 style={styles.blue}>Burst Performer</h3>
+        <h3 style={{ color: "#38bdf8" }}>Burst Performer</h3>
         <p style={styles.desc}>
           Solves many problems in bursts, then rests
         </p>
       </div>
 
       {/* STATS */}
-      <div style={styles.grid}>
-        <div style={styles.card}>
-          <p>Rank</p>
-          <h2>#120</h2>
-          <span>Global</span>
-        </div>
-
-        <div style={styles.card}>
-          <p>Streak</p>
-          <h2>12</h2>
-          <span>days</span>
-        </div>
-
-        <div style={styles.card}>
-          <p>Points</p>
-          <h2>3,420</h2>
-          <span>total</span>
-        </div>
+      <div style={styles.stats}>
+        <Stat title="Rank" value="#120" sub="Global" />
+        <Stat title="Streak" value="12" sub="days" />
+        <Stat title="Points" value="3,420" sub="total" />
       </div>
 
       {/* BADGES */}
       <h3 style={styles.section}>Badges & Titles</h3>
-      <div style={styles.badgeGrid}>
-        {["🏆 Top Performer", "🎯 Consistent", "👑 Comeback King",
-          "⚔️ 7-Day Warrior", "💯 Century Club", "💪 Hard Hitter"].map((b) => (
-          <div key={b} style={styles.badge}>{b}</div>
-        ))}
+
+      <div style={styles.grid}>
+        <Badge label="Top Performer" icon="🏆" />
+        <Badge label="Most Consistent" icon="🎯" />
+        <Badge label="Comeback King" icon="👑" />
+        <Badge label="7-Day Warrior" icon="⚔️" />
+        <Badge label="Century Club" icon="💯" />
+        <Badge label="Hard Hitter" icon="💪" />
       </div>
 
       {/* TOKENS */}
       <h3 style={styles.section}>Tokens</h3>
-      <div style={styles.list}>
-        <div style={styles.listItem}>🔄 Streak Restore <span>2</span></div>
-        <div style={styles.listItem}>❄️ Freeze Day <span>1</span></div>
-        <div style={styles.listItem}>⏭️ Skip Penalty <span>3</span></div>
-      </div>
+
+      <Token label="Streak Restore" value="2" />
+      <Token label="Freeze Day" value="1" />
+      <Token label="Skip Penalty" value="3" />
 
       {/* PLATFORM */}
       <div style={styles.platform}>
-        <p>Platform</p>
-        <h4>{userData.arena || "LeetCode"}</h4>
-        <span>Age group: {userData.age}</span>
+        <h3>Platform</h3>
+        <p style={{ color: "#94a3b8" }}>
+          {userData.arena || "LeetCode"} • Age group: {userData.age || "18-21"}
+        </p>
+        <p style={{ color: "#f59e0b" }}>⭐ Elite Group Member</p>
       </div>
 
-      {/* BACK */}
-      <button onClick={goBack} style={styles.button}>
-        ← Back
-      </button>
+      {/* NAVBAR */}
+      <div style={styles.nav}>
+        <NavItem label="Home" onClick={() => navigate("/dashboard")} />
+        <NavItem label="Ranks" onClick={() => navigate("/ranks")} />
+        <NavItem label="Groups" onClick={() => navigate("/groups")} />
+        <NavItem label="Stats" onClick={() => navigate("/stats")} />
+        <NavItem label="Profile" active />
+      </div>
     </div>
   );
 }
+
+/* COMPONENTS */
+
+function Stat({ title, value, sub }: any) {
+  return (
+    <div style={styles.statCard}>
+      <p style={styles.small}>{title}</p>
+      <h2>{value}</h2>
+      <span style={styles.sub}>{sub}</span>
+    </div>
+  );
+}
+
+function Badge({ label, icon }: any) {
+  return (
+    <div style={styles.badge}>
+      <div style={{ fontSize: "20px" }}>{icon}</div>
+      <p>{label}</p>
+    </div>
+  );
+}
+
+function Token({ label, value }: any) {
+  return (
+    <div style={styles.token}>
+      <span>{label}</span>
+      <span>{value}</span>
+    </div>
+  );
+}
+
+function NavItem({ label, onClick, active }: any) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        color: active ? "#38bdf8" : "#94a3b8",
+        cursor: "pointer",
+      }}
+    >
+      {label}
+    </div>
+  );
+}
+
+/* STYLES */
 
 const styles: any = {
   container: {
@@ -87,6 +134,7 @@ const styles: any = {
     background: "#020617",
     color: "white",
     padding: "20px",
+    paddingBottom: "80px",
   },
 
   header: {
@@ -95,49 +143,63 @@ const styles: any = {
   },
 
   avatar: {
-    width: "70px",
-    height: "70px",
+    width: "80px",
+    height: "80px",
     borderRadius: "50%",
-    background: "#0ea5e9",
+    background: "#164e63",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "24px",
-    margin: "0 auto 10px",
+    fontSize: "30px",
+    margin: "auto",
+    marginBottom: "10px",
   },
 
   handle: {
     color: "#94a3b8",
+    fontSize: "14px",
   },
 
   active: {
     color: "#22c55e",
     fontSize: "12px",
+    marginTop: "5px",
   },
 
-  highlight: {
+  personality: {
     border: "1px solid #38bdf8",
-    borderRadius: "12px",
     padding: "15px",
+    borderRadius: "12px",
     marginBottom: "20px",
   },
 
-  blue: { color: "#38bdf8" },
-  small: { color: "#94a3b8", fontSize: "12px" },
-  desc: { color: "#94a3b8" },
+  desc: {
+    color: "#94a3b8",
+    fontSize: "13px",
+  },
 
-  grid: {
-    display: "flex",
+  stats: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr 1fr",
     gap: "15px",
     marginBottom: "20px",
   },
 
-  card: {
-    flex: 1,
+  statCard: {
     background: "#0f172a",
     padding: "15px",
-    borderRadius: "10px",
+    borderRadius: "12px",
     textAlign: "center",
+  },
+
+  small: {
+    color: "#64748b",
+    fontSize: "12px",
+  },
+
+  sub: {
+    fontSize: "12px",
+    color: "#64748b",
   },
 
   section: {
@@ -145,46 +207,45 @@ const styles: any = {
     marginBottom: "10px",
   },
 
-  badgeGrid: {
+  grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
+    gridTemplateColumns: "1fr 1fr 1fr",
     gap: "10px",
   },
 
   badge: {
     background: "#0f172a",
-    padding: "10px",
-    borderRadius: "8px",
+    padding: "15px",
+    borderRadius: "10px",
     textAlign: "center",
   },
 
-  list: {
-    marginTop: "10px",
-  },
-
-  listItem: {
+  token: {
+    background: "#0f172a",
+    padding: "15px",
+    borderRadius: "10px",
     display: "flex",
     justifyContent: "space-between",
-    background: "#0f172a",
-    padding: "10px",
-    borderRadius: "8px",
     marginBottom: "10px",
   },
 
   platform: {
-    marginTop: "20px",
     background: "#0f172a",
     padding: "15px",
-    borderRadius: "10px",
+    borderRadius: "12px",
+    marginTop: "20px",
   },
 
-  button: {
-    marginTop: "20px",
-    padding: "10px",
-    background: "#38bdf8",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
+  nav: {
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    display: "flex",
+    justifyContent: "space-around",
+    background: "#020617",
+    borderTop: "1px solid #1e293b",
+    padding: "12px",
   },
 };
 

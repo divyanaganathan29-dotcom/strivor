@@ -1,40 +1,45 @@
 import { useState } from "react";
+import { db } from "../firebase";
+import { doc, updateDoc } from "firebase/firestore";
 
 type Props = {
+  userData: any;
   next: (age: string) => void;
 };
 
-function AgePage({ next }: Props) {
-  const [selected, setSelected] = useState("");
+function AgePage({ userData, next }: Props) {
+  const [age, setAge] = useState("");
 
-  const ages = ["Under 15", "15-17", "18-21", "22-25", "26+"];
+  const saveAge = async () => {
+    await updateDoc(doc(db, "users", userData.docId), {
+      age: age,
+    });
+
+    console.log("Age updated!");
+    next(age);
+  };
 
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Your age group</h1>
-      <p style={styles.subtitle}>Compete with peers your age</p>
 
-      <div style={styles.list}>
-        {ages.map((age) => (
-          <div
-            key={age}
-            onClick={() => setSelected(age)}
-            style={{
-              ...styles.card,
-              border: selected === age ? "2px solid #38bdf8" : "none",
-            }}
-          >
-            {age}
-          </div>
-        ))}
-      </div>
+      {["Under 15", "15-17", "18-21", "22-25", "26+"].map((item) => (
+        <div
+          key={item}
+          onClick={() => setAge(item)}
+          style={{
+            padding: "10px",
+            margin: "10px",
+            background: "#1e293b",
+            cursor: "pointer",
+          }}
+        >
+          {item}
+        </div>
+      ))}
 
-      <button
-        onClick={() => next(selected)}
-        disabled={!selected}
-        style={styles.button(selected)}
-      >
-        Let’s Go ⚡
+      <button onClick={saveAge} disabled={!age}>
+        Finish →
       </button>
     </div>
   );
@@ -51,27 +56,6 @@ const styles = {
     justifyContent: "center",
   },
   title: { fontSize: "40px" },
-  subtitle: { marginBottom: "20px", color: "#94a3b8" },
-  list: { display: "flex", flexDirection: "column" as const, gap: "15px" },
-  card: {
-    padding: "15px",
-    background: "#1e293b",
-    borderRadius: "10px",
-    width: "250px",
-    textAlign: "center" as const,
-    cursor: "pointer",
-  },
-  button: (active: string) => ({
-    padding: "14px 30px",
-    background: "#38bdf8",
-    border: "none",
-    borderRadius: "10px",
-    color: "black",
-    fontWeight: "600",
-    marginTop: "20px",
-    opacity: active ? 1 : 0.4,
-    cursor: active ? "pointer" : "not-allowed",
-  }),
 };
 
 export default AgePage;
